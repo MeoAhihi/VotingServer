@@ -3,14 +3,16 @@ const http = require("http");
 const socketIO = require("socket.io");
 const mongoose = require("mongoose");
 const cookieParser = require("cookie-parser");
+const uri = "mongodb+srv://phonglv124010121062:C3YxdMT4XXQnFEXV@voteprompt.cftte1i.mongodb.net/voting?retryWrites=true&w=majority"
 
 const app = express();
-app.use(express.static("D:\\VotingServer"));
+app.use(express.static("/home/ubuntu/VotingServer"));
 app.use(cookieParser());
+app.use(express.json());
 
 const server = http.createServer(app);
 const io = socketIO(server);
-const client = mongoose.connect("mongodb://127.0.0.1:27017/voting").then(() => {
+const client = mongoose.connect(uri).then(() => {
   console.log("MongoDB connected");
 });
 
@@ -26,23 +28,23 @@ const Ticket = mongoose.model("Ticket", ticketSchema);
 app.get("/", (req, res) => {
   res.cookie("vote-auth", req.ip);
   res.cookie("vote", req.ip + "as");
-  res.sendFile("D:\\VotingServer\\wait.html");
+  res.sendFile("/home/ubuntu/VotingServer/wait.html");
 });
 app.get("/king", (req, res) => {
-  res.sendFile("D:\\VotingServer\\king.html");
+  res.sendFile("/home/ubuntu/VotingServer/king.html");
 });
 app.get("/queen", (req, res) => {
-  res.sendFile("D:\\VotingServer\\queen.html");
+  res.sendFile("/home/ubuntu/VotingServer/queen.html");
 });
 
 app.get("/host", (req, res) => {
-  res.sendFile("D:\\VotingServer\\hostNav.html");
+  res.sendFile("/home/ubuntu/VotingServer/hostNav.html");
 });
 app.get("/hostKing", (req, res) => {
-  res.sendFile("D:\\VotingServer\\hostKing.html");
+  res.sendFile("/home/ubuntu/VotingServer/hostKing.html");
 });
 app.get("/hostQueen", (req, res) => {
-  res.sendFile("D:\\VotingServer\\hostQueen.html");
+  res.sendFile("/home/ubuntu/VotingServer/hostQueen.html");
 });
 
 // Set up a connection event for new socket connections
@@ -116,7 +118,7 @@ io.on("connection", (socket) => {
 });
 
 // Start the server on port 3000
-const PORT = process.env.PORT || 80;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`Server is listening on port ${PORT}`);
 });
