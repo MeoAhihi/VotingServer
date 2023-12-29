@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Host</title>
+    <script src="/socket.io/socket.io.js"></script>
+    <script defer>
+      const socket = io();
+      socket.on("updateVoting", (data) => {
+        const div = document.getElementById("vote-num");
+        div.innerHTML = "";
+        data.forEach((element) => {
+          const li = document.createElement("li");
+          li.innerText = element["_id"] + ", vote: " + element["vote"];
+          div.appendChild(li);
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="vote-num"></div>
+  </body>
+</html>

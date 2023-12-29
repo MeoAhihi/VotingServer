@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Chọn King của bạn</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(
+          to bottom right,
+          #4b0082,
+          #800080
+        ); /* Dark purple gradient */
+        font-family: "Carattere", sans-serif;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      header {
+        width: 100%;
+        background-color: transparent;
+        text-align: center;
+        padding: 10px;
+        font-size: 38px;
+        color: #ffd700; /* Golden yellow text color */
+        /* margin-bottom: 20px; */
+      }
+      .quiz-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        /* max-width: 800px; */
+        width: 100%;
+      }
+
+      .picture-container {
+        position: relative;
+        width: 40%;
+        margin: 10px;
+        /* overflow: hidden; */
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .picture {
+        width: 100%; /* Set the width to 100% */
+        height: 170px; /* Set the desired height */
+        object-fit: cover; /* Maintain aspect ratio and cover the container */
+        transition: transform 0.3s;
+      }
+      .blured {
+        filter: brightness(50%) blur(5px);
+      }
+
+      input[type="radio"] {
+        display: none;
+      }
+
+      input[type="submit"] {
+        padding: 15px; /* Increased padding for better visibility */
+        background-color: #e7cdf7;
+        border: none;
+        color: #000000;
+        font-family: "Merienda", cursive;
+        font-size: 16px;
+        cursor: pointer;
+        width: calc(80% + 20px);
+      }
+      input[type="submit"]:hover {
+        background-color: #34084e;
+      }
+      .text {
+        padding: 6px;
+        font-family: "Merienda", cursive;
+        background-color: #ffd700;
+        color: #000000;
+        font-size: 16px;
+        /* margin-top: 4px; */
+      }
+
+      .submit-container {
+        width: 100%;
+        text-align: center;
+      }
+      /* Media query for screens wider than 700 pixels */
+      @media screen and (min-width: 500px) {
+        header {
+          font-size: 65px;
+        }
+        .picture-container {
+          width: 20%; /* Adjust the width as needed */
+        }
+        .picture {
+          height: 80%;
+        }
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Carattere&family=Merienda:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="blur_image_effect.js" defer></script>
+  </head>
+  <body>
+    <header>Hãy chọn King của bạn</header>
+    <form id="quizForm">
+      <div class="quiz-container">
+        <div class="picture-container">
+          <label for="optionA">
+            <img
+              class="picture"
+              src="Ảnh King and Queen/Anh Duy.JPG"
+              alt="Anh Duy"
+            />
+            <input
+              type="radio"
+              id="optionA"
+              name="selected_picture"
+              value="Anh Duy"
+            />
+            <div class="text">Anh Duy</div>
+          </label>
+        </div>
+
+        <div class="picture-container">
+          <label for="optionB">
+            <img
+              class="picture"
+              src="Ảnh King and Queen/Anh Khoa.JPG"
+              alt="Anh Khoa"
+            />
+            <input
+              type="radio"
+              id="optionB"
+              name="selected_picture"
+              value="Anh Khoa"
+            />
+            <div class="text">Anh Khoa</div>
+          </label>
+        </div>
+
+        <div class="picture-container">
+          <label for="optionC">
+            <img
+              class="picture"
+              src="Ảnh King and Queen/Minh Thông.jpg"
+              alt="Minh Thông"
+            />
+            <input
+              type="radio"
+              id="optionC"
+              name="selected_picture"
+              value="Minh Thông"
+            />
+            <div class="text">Minh Thông</div>
+          </label>
+        </div>
+
+        <div class="picture-container">
+          <label for="optionD">
+            <img
+              class="picture"
+              src="Ảnh King and Queen/Thanh Tâm.JPG"
+              alt="Thanh Tâm"
+            />
+            <input
+              type="radio"
+              id="optionD"
+              name="selected_picture"
+              value="Thanh Tâm"
+            />
+            <div class="text">Thanh Tâm</div>
+          </label>
+        </div>
+      </div>
+
+      <div class="submit-container">
+        <input type="submit" value="Xác nhận" />
+      </div>
+    </form>
+    <script>
+      const cookies = document.cookie.split(";");
+      const authcode = cookies.find((e) => e.startsWith("vote-auth="));
+      const key = authcode.substring(authcode.indexOf("=") + 1);
+      const socket = io();
+      socket.on("to King", () => {
+        window.location.replace("/king");
+      });
+      socket.on("to Queen", () => {
+        window.location.replace("/queen");
+      });
+      const form = document.getElementById("quizForm");
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const KingRadios = document.getElementsByName("selected_picture");
+        let selectedKing = "";
+        for (const radio of KingRadios) {
+          if (radio.checked) {
+            selectedKing = radio.value;
+            break;
+          }
+        }
+        socket.emit("vote", Date.now(), selectedKing, "King", key);
+        const submit_btn = form[4];
+        if (selectedKing !== "") {
+          submit_btn.disabled = true;
+          submit_btn.style.opacity = 0.5;
+          submit_btn.value = "Đã bình chọn thành công";
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Kết qua bầu chọn</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: linear-gradient(
+          to bottom right,
+          #4b0082,
+          #800080
+        ); /* Dark purple gradient */
+        font-family: "Carattere", sans-serif;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+      header {
+        width: 100%;
+        background-color: transparent;
+        text-align: center;
+        padding: 10px;
+        font-size: 48px;
+        color: #ffd700; /* Golden yellow text color */
+        /* margin-bottom: 20px; */
+      }
+      .quiz-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        /* max-width: 800px; */
+        width: 100%;
+      }
+
+      .picture-container {
+        position: relative;
+        width: 40%;
+        margin: 10px;
+        /* overflow: hidden; */
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .picture {
+        width: 100%; /* Set the width to 100% */
+        height: 170px; /* Set the desired height */
+        object-fit: cover; /* Maintain aspect ratio and cover the container */
+        transition: transform 0.3s;
+      }
+
+      .blured {
+        filter: brightness(50%) blur(5px);
+      }
+
+      .picture-container:hover .crown {
+        opacity: 1;
+      }
+
+      .text {
+        padding: 6px;
+        font-family: "Merienda", cursive;
+        font-weight: bold;
+        background-color: #ffd700;
+        color: #000000;
+        font-size: 16px;
+        margin-bottom: 16px;
+      }
+      .result {
+        padding: 6px;
+        background-color: #343434;
+        color: #ffffff;
+        font-size: 40px;
+        font-weight: bold;
+        margin-bottom: 16px;
+      }
+
+      .submit-container {
+        width: 100%;
+        text-align: center;
+      }
+      /* Media query for screens wider than 700 pixels */
+      @media screen and (min-width: 500px) {
+        header {
+          font-size: 80px;
+          padding: 0;
+        }
+        .picture-container {
+          width: 20%; /* Adjust the width as needed */
+        }
+        .picture {
+          height: 80%;
+        }
+      }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Carattere&family=Merienda:wght@600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="/socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <header>Kết quả bầu chọn</header>
+    <div class="quiz-container">
+      <div class="picture-container">
+        <div class="text">Anh Duy</div>
+        <img
+          class="picture"
+          src="Ảnh King and Queen/Anh Duy.JPG"
+          alt="Anh Duy"
+        />
+        <div class="result" id="Anh Duy">0</div>
+      </div>
+
+      <div class="picture-container">
+        <div class="text">Anh Khoa</div>
+        <img
+          class="picture"
+          src="Ảnh King and Queen/Anh Khoa.JPG"
+          alt="Anh Khoa"
+        />
+        <div class="result" id="Anh Khoa">0</div>
+      </div>
+
+      <div class="picture-container">
+        <div class="text">Minh Thông</div>
+        <img
+          class="picture"
+          src="Ảnh King and Queen/Minh Thông.jpg"
+          alt="Minh Thông"
+        />
+        <div class="result" id="Minh Thông">0</div>
+      </div>
+
+      <div class="picture-container">
+        <div class="text">Thanh Tâm</div>
+        <img
+          class="picture"
+          src="Ảnh King and Queen/Thanh Tâm.JPG"
+          alt="Thanh Tâm"
+        />
+        <div class="result" id="Thanh Tâm">0</div>
+      </div>
+    </div>
+    <script>
+      const socket = io();
+      socket.on("updateVoting", (data) => {
+        const candidates = document.querySelectorAll("div.result");
+
+        candidates.forEach((e) => {
+          const personalVote = data.find((person) => person._id === e.id);
+          if (personalVote) {
+            e.innerHTML = personalVote.vote;
+          }
+        });
+      });
+
+      socket.emit("host-init");
+    </script>
+  </body>
+</html>
